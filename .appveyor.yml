@@ -2,12 +2,14 @@ image:
   - Visual Studio 2017
 platform:
   - x64
-clone_folder: c:\projects\hello_travis
+clone_folder: c:\projects\source
 build_script:
-  - cd %APPVEYOR_BUILD_FOLDER%
-  - >
-    cmake %APPVEYOR_BUILD_FOLDER&\src
-    -G "%generator%""
+- cmd: >-
+    mkdir build
+    cd build
+    
+    cmake c:\projects\source -G "Visual Studio 15"
+    
     cmake --build . --config "Debug"
 test_script:
-  - cmd: ctest -C Debug
+- cmd: ctest -C Debug

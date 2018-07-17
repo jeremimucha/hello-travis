@@ -107,15 +107,15 @@ find_program(Cppcheck NAMES cppcheck)
 if (Cppcheck)
     list(
         APPEND Cppcheck 
-            "--enable=all"
-            "--inconclusive"
-            "--force"
-            "--verbose"
-            "--language=c++"
-            "--inline-suppr"
-            "${CMAKE_SOURCE_DIR}/include/*.h"
-            "${CMAKE_SOURCE_DIR}/src/*.cpp"
-            "${CMAKE_SOURCE_DIR}/test/*.cpp"
+            --enable=all
+            --inconclusive
+            --force
+            --verbose
+            --language=c++
+            --inline-suppr
+            ${CMAKE_SOURCE_DIR}/include/*.h
+            ${CMAKE_SOURCE_DIR}/src/*.cpp
+            ${CMAKE_SOURCE_DIR}/test/*.cpp
     )
     message(${Cppcheck})
 endif()
@@ -124,8 +124,8 @@ find_program(Clangtidy NAMES clang-tidy)
 if (Clangtidy)
     list(
         APPEND Clangtidy 
-            "-checks='*'"
-            "-header-filter='.*'"
+            -checks='*'
+            -header-filter='.*'
     )
     message(${Clangtidy})
 endif()
