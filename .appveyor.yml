@@ -4,12 +4,11 @@ platform:
   - x64
 clone_folder: c:\projects\hello_travis
 build_script:
-- cmd: >-
-    mkdir c:\projects\hello_travis\build
-    cd c:\projects\hello_travis\build
-
+  - cd %APPVEYOR_BUILD_FOLDER%
+  - >
+    cmake %APPVEYOR_BUILD_FOLDER&\src
+    -G "%generator%""
     cmake c:\projects\hello_travis -G "Visual Studio 15"
-
-    cmake --build . --config "Debug64"
+    cmake --build . --config "Debug"
 test_script:
-- cmd: ctest -C Debug
+  - cmd: ctest -C Debug
