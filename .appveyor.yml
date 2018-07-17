@@ -1,5 +1,6 @@
 image:
   - Visual Studio 2017
+platform:
   - x64
 clone_folder: c:\projects\hello_travis
 build_script:
@@ -9,6 +10,6 @@ build_script:
 
     cmake c:\projects\hello_travis -G "Visual Studio 15"
 
-    cmake --build . --config "Debug"
+    cmake --build . --config "Debug64"
 test_script:
 - cmd: ctest -C Debug
