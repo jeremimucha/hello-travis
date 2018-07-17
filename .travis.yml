@@ -8,9 +8,11 @@ addons:
       - ubuntu-toolchain-r-test
     packages:
       - g++-8
+      - googletest
 
 script:
   - CXX=/usr/bin/g++-8 CC=/usr/bin/gcc-8 cmake -D ENABLE_COVERAGE:BOOL=TRUE . 
   - cmake --build . -- -j2
+  - cd test
   - ctest -j2
   - bash <(curl -s https://codecov.io/bash) -x /usr/bin/gcov-8

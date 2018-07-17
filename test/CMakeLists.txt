@@ -47,3 +47,6 @@ target_link_libraries( ${PROJECT_NAME}
     GTest::GTest
     GTest::Main
     )
+
+enable_testing()
+gtest_discover_tests(${PROJECT_NAME})
