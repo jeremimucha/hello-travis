@@ -103,6 +103,9 @@ else()
                 # (ie printf) 
     )
 endif()
+
+option(CPP_USE_CPPCHECK "Enable cppcheck build step" FALSE)
+if(CPP_USE_CPPCHECK)
 find_program(Cppcheck NAMES cppcheck)
 if (Cppcheck)
     list(
@@ -119,14 +122,19 @@ if (Cppcheck)
     )
     message(${Cppcheck})
 endif()
+endif()
 
+option(CPP_USE_CLANGTIDY "Enable clang-tidy build step" FALSE)
+if(CPP_USE_CLANGTIDY)
 find_program(Clangtidy NAMES clang-tidy)
 if (Clangtidy)
     list(
         APPEND Clangtidy 
             "-checks='*'"
+            "-header-filter='.*'"
     )
     message(${Clangtidy})
+endif()
 endif()
 # set(CMAKE_CXX_CLANG_TIDY ${Clangtidy})
 # set(CMAKE_CXX_CPPCHECK ${Cppcheck})
@@ -138,14 +146,21 @@ set( InternalLibrary "${Project}_internallib" ) # cmake will add a "lib" prefix 
 
 
 add_library( ${InternalLibrary}
-STATIC
-${LibrarySources}
-)
-set_target_properties( ${InternalLibrary}
-    PROPERTIES
-    CXX_CPPCHECK "${Cppcheck}"
-    CXX_CLANG_TIDY "${Clangtidy}"
+    STATIC
+    ${LibrarySources}
     )
+if(CPP_USE_CPPCHECK)
+    set_target_properties( ${InternalLibrary}
+        PROPERTIES
+        CXX_CPPCHECK "${Cppcheck}"
+    )
+endif()
+if(CPP_USE_CLANGTIDY)
+    set_target_properties( ${InternalLibrary}
+        PROPERTIES
+        CXX_CLANG_TIDY "${Clangtidy}"
+    )
+endif()
 if(ENABLE_COVERAGE)
     target_compile_options(
         ${InternalLibrary}
@@ -172,11 +187,18 @@ target_link_libraries( ${InternalLibrary}
 add_executable( ${PROJECT_NAME}
     ${MainSources}
 )
-set_target_properties( ${PROJECT_NAME}
-    PROPERTIES
-    CXX_CPPCHECK "${Cppcheck}"
-    CXX_CLANG_TIDY "${Clangtidy}"
+if(CPP_USE_CPPCHECK)
+    set_target_properties( ${InternalLibrary}
+        PROPERTIES
+        CXX_CPPCHECK "${Cppcheck}"
     )
+endif()
+if(CPP_USE_CLANGTIDY)
+    set_target_properties( ${InternalLibrary}
+        PROPERTIES
+        CXX_CLANG_TIDY "${Clangtidy}"
+    )
+endif()
 if(ENABLE_COVERAGE)
     target_compile_options(
         ${InternalLibrary}

@@ -11,7 +11,7 @@ platform:
 clone_folder: c:\projects\hello-travis
 
 before_build:
-- cmd: >-
+- cmd: |-
     mkdir build
     cd build
     cmake --version
