@@ -8,7 +8,6 @@ build_script:
   - >
     cmake %APPVEYOR_BUILD_FOLDER&\src
     -G "%generator%""
-    cmake c:\projects\hello_travis -G "Visual Studio 15"
     cmake --build . --config "Debug"
 test_script:
   - cmd: ctest -C Debug
