@@ -1,10 +1,11 @@
 image:
   - Visual Studio 2017
+  - x64
 clone_folder: c:\projects\hello_travis
 build_script:
 - cmd: >-
-    mkdir build
-    cd build
+    mkdir c:\projects\hello_travis\build
+    cd c:\projects\hello_travis\build
 
     cmake c:\projects\hello_travis -G "Visual Studio 15"
 
