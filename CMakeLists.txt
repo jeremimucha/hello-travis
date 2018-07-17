@@ -104,7 +104,7 @@ else()
     )
 endif()
 
-option(CPP_USE_CPPCHECK "Enable cppcheck build step" FALSE)
+option(CPP_USE_CPPCHECK "Enable cppcheck build step" TRUE)
 if(CPP_USE_CPPCHECK)
 find_program(Cppcheck NAMES cppcheck)
 if (Cppcheck)
@@ -124,7 +124,7 @@ if (Cppcheck)
 endif()
 endif()
 
-option(CPP_USE_CLANGTIDY "Enable clang-tidy build step" FALSE)
+option(CPP_USE_CLANGTIDY "Enable clang-tidy build step" TRUE)
 if(CPP_USE_CLANGTIDY)
 find_program(Clangtidy NAMES clang-tidy)
 if (Clangtidy)
@@ -163,12 +163,12 @@ if(CPP_USE_CLANGTIDY)
 endif()
 if(ENABLE_COVERAGE)
     target_compile_options(
-        ${InternalLibrary}
+        ${InternalLibrary} PRIVATE
         -g
         -O0
-        -fprofile-args
-        -ftest-coverage
         --coverage
+        -fprofile-arcs
+        -ftest-coverage
     )
 endif()
 add_library( Lib::InternalLibrary
@@ -201,12 +201,12 @@ if(CPP_USE_CLANGTIDY)
 endif()
 if(ENABLE_COVERAGE)
     target_compile_options(
-        ${InternalLibrary}
+        ${PROJECT_NAME} PRIVATE
         -g
         -O0
-        -fprofile-args
-        -ftest-coverage
         --coverage
+        -fprofile-arcs
+        -ftest-coverage
     )
 endif()
 target_include_directories( ${PROJECT_NAME}
