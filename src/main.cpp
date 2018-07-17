@@ -4,4 +4,5 @@
 int main()
 {
     say_hello("Travis");
+    say_hi("Appveyor");
 }

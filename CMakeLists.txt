@@ -68,10 +68,6 @@ set( CMAKE_EXPORT_COMPILE_COMMANDS ON )
 
 if(CMAKE_COMPILER_IS_GNUCC)
   option(ENABLE_COVERAGE "Enable coverage reporting for gcc/clang" FALSE)
-
-  if(ENABLE_COVERAGE)
-    add_compile_options(--coverage -O0)
-  endif()
 endif()
 
 add_library(project_warnings INTERFACE)
@@ -111,11 +107,16 @@ find_program(Cppcheck NAMES cppcheck)
 if (Cppcheck)
     list(
         APPEND Cppcheck 
-            "-I${PROJECT_SOURCE_DIR}/include"
-            "--enable=all"
-            "--inconclusive"
-            "--force"
-            "--inline-suppr"
+            --enable=all
+            --inconclusive
+            --force
+            --verbose
+            --language=c++
+            --inline-suppr
+            
+            ${CMAKE_SOURCE_DIR}/include/*.h
+            ${CMAKE_SOURCE_DIR}/src/*.cpp
+            ${CMAKE_SOURCE_DIR}/test/*.cpp
     )
     message(${Cppcheck})
 endif()
@@ -124,7 +125,8 @@ find_program(Clangtidy NAMES clang-tidy)
 if (Clangtidy)
     list(
         APPEND Clangtidy 
-            "-checks='*'"
+            -checks='*'
+            header-filter=.*
     )
     message(${Clangtidy})
 endif()
@@ -146,6 +148,16 @@ set_target_properties( ${InternalLibrary}
     CXX_CPPCHECK "${Cppcheck}"
     CXX_CLANG_TIDY "${Clangtidy}"
     )
+if(ENABLE_COVERAGE)
+    target_compile_options(
+        ${InternalLibrary}
+        -g
+        -O0
+        -fprofile-args
+        -ftest-coverage
+        --coverage
+    )
+endif()
 add_library( Lib::InternalLibrary
     ALIAS ${InternalLibrary}
     )
@@ -161,13 +173,23 @@ target_link_libraries( ${InternalLibrary}
 # Then the executable
 add_executable( ${PROJECT_NAME}
     ${MainSources}
-    )
-    set_target_properties( ${PROJECT_NAME}
+)
+set_target_properties( ${PROJECT_NAME}
     PROPERTIES
     CXX_CPPCHECK "${Cppcheck}"
     CXX_CLANG_TIDY "${Clangtidy}"
     )
-    target_include_directories( ${PROJECT_NAME}
+if(ENABLE_COVERAGE)
+    target_compile_options(
+        ${InternalLibrary}
+        -g
+        -O0
+        -fprofile-args
+        -ftest-coverage
+        --coverage
+    )
+endif()
+target_include_directories( ${PROJECT_NAME}
     PUBLIC ${PROJECT_SOURCE_DIR}/include
 )
     # If using any external libraries include them here after the Internal Library.
