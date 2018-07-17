@@ -11,11 +11,11 @@ platform:
 clone_folder: c:\projects\hello-travis
 
 before_build:
-- cmd: |-
+- cmd: >-
     mkdir build
     cd build
     cmake --version
-    cmake c:\projects\hello-travis -G %generator%
+    cmake c:\projects\hello-travis -G"Visual Studio 15 2017"
 
 build_script:
 - cmd: >-
