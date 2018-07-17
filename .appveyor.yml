@@ -1,15 +1,25 @@
 image:
   - Visual Studio 2017
+
+configuration:
+- Release
+- Debug
+
 platform:
   - x64
-clone_folder: c:\projects\source
-build_script:
-- cmd: >-
+
+clone_folder: c:\projects\hello-travis
+
+before_build:
+- cmd: |-
     mkdir build
     cd build
-    
-    cmake c:\projects\source -G "Visual Studio 15"
-    
-    cmake --build . --config "Debug"
+    cmake --version
+    cmake c:\projects\hello-travis -G %generator%
+
+build_script:
+- cmd: >-
+    cmake --build . --config "%configuration%"
+
 test_script:
 - cmd: ctest -C Debug

@@ -125,7 +125,6 @@ if (Clangtidy)
     list(
         APPEND Clangtidy 
             -checks='*'
-            -header-filter='.*'
     )
     message(${Clangtidy})
 endif()
