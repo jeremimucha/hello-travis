@@ -8,14 +8,14 @@ cmake_minimum_required( VERSION 3.1 )
 set( TestProject "test_${Project}" )
 project( ${TestProject} )
 
-find_package(GTest REQUIRED)
-if(GTEST_FOUND)
-    include_directories(
-        ${GTEST_INCLUDE_DIRS}
-    )
-else()
-    message(FATAL_ERROR "Cannot find GoogleTest")
-endif()
+# find_package(GTest REQUIRED)
+# if(GTEST_FOUND)
+#     include_directories(
+#         ${GTEST_INCLUDE_DIRS}
+#     )
+# else()
+#     message(FATAL_ERROR "Cannot find GoogleTest")
+# endif()
 
 ###############################################################################
 # Prepare test sources
@@ -28,6 +28,8 @@ file( GLOB TestSources
       "${PROJECT_SOURCE_DIR}/test_*.cpp"
     )
 
+set( CMAKE_EXPORT_COMPILE_COMMANDS ON )
+set( CMAKE_VERBOSE_MAKEFILE OFF )
 
 ###############################################################################
 # Build executable
@@ -49,4 +51,5 @@ target_link_libraries( ${PROJECT_NAME}
     )
 
 enable_testing()
-gtest_discover_tests(${PROJECT_NAME})
+# gtest_discover_tests(${PROJECT_NAME})
+add_test(test_main ${PROJECT_NAME})

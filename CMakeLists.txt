@@ -11,7 +11,7 @@ project( ${Project} )
 # subdir with an appropriate CMakeLists and add the following
 # for each library
 # add_subdirectory( external/some_lib )
-# add_subdirectory( external/catch )
+add_subdirectory( external/google-test )
 
 
 # Find any external libraries via find_backage
@@ -56,6 +56,7 @@ list( REMOVE_ITEM LibrarySources ${MainSources} )
 ###############################################################################
 # Set required C++ standard
 set( CMAKE_CXX_STANDARD 17 )
+set( CMAKE_CXX_STANDARD_REQUIRED TRUE )
 # Set build type
 if( NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
   message("Setting build type to 'Debug' as none was specified.")
@@ -106,15 +107,44 @@ else()
                 # (ie printf) 
     )
 endif()
+find_program(Cppcheck NAMES cppcheck)
+if (Cppcheck)
+    list(
+        APPEND Cppcheck 
+            "-I${PROJECT_SOURCE_DIR}/include"
+            "--enable=all"
+            "--inconclusive"
+            "--force"
+            "--inline-suppr"
+    )
+    message(${Cppcheck})
+endif()
 
+find_program(Clangtidy NAMES clang-tidy)
+if (Clangtidy)
+    list(
+        APPEND Clangtidy 
+            "-checks='*'"
+    )
+    message(${Clangtidy})
+endif()
+# set(CMAKE_CXX_CLANG_TIDY ${Clangtidy})
+# set(CMAKE_CXX_CPPCHECK ${Cppcheck})
 ###############################################################################
 # Build target
 ###############################################################################
 # Internal library first
 set( InternalLibrary "${Project}_internallib" ) # cmake will add a "lib" prefix to the name
 
+
 add_library( ${InternalLibrary}
-    ${LibrarySources}
+STATIC
+${LibrarySources}
+)
+set_target_properties( ${InternalLibrary}
+    PROPERTIES
+    CXX_CPPCHECK "${Cppcheck}"
+    CXX_CLANG_TIDY "${Clangtidy}"
     )
 add_library( Lib::InternalLibrary
     ALIAS ${InternalLibrary}
@@ -127,20 +157,27 @@ target_link_libraries( ${InternalLibrary}
     # ${Boost_LIBRARIES}
     )
 
+
 # Then the executable
 add_executable( ${PROJECT_NAME}
     ${MainSources}
     )
-target_include_directories( ${PROJECT_NAME}
-    PUBLIC ${PROJECT_SOURCE_DIR}/include
+    set_target_properties( ${PROJECT_NAME}
+    PROPERTIES
+    CXX_CPPCHECK "${Cppcheck}"
+    CXX_CLANG_TIDY "${Clangtidy}"
     )
-# If using any external libraries include them here after the Internal Library.
-# They need to be properly found first. See find_package section
-target_link_libraries( ${PROJECT_NAME}
+    target_include_directories( ${PROJECT_NAME}
+    PUBLIC ${PROJECT_SOURCE_DIR}/include
+)
+    # If using any external libraries include them here after the Internal Library.
+    # They need to be properly found first. See find_package section
+    target_link_libraries( ${PROJECT_NAME}
     project_warnings --coverage
     Lib::InternalLibrary
     # ${Boost_LIBRARIES}
     )
+
 
 
 ###############################################################################
