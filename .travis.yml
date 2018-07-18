@@ -13,14 +13,6 @@ matrix:
             - g++-7
       env:
         - MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"
-      before_install:
-        - eval "${MATRIX_EVAL}"
-      script:
-        - cmake -DENABLE_COVERAGE:BOOL=TRUE -DENABLE_ASAN:BOOL=TRUE -DENABLE_WERROR:BOOL=FALSE .
-        - cmake --build . -- -j2
-        - cd test
-        - ctest -V -j2
-        - bash <(curl -s https://codecov.io/bash) -x /usr/bin/gcov-7
 
     - os: linux
       addons:
@@ -34,10 +26,11 @@ matrix:
       before_install:
         - eval "${MATRIX_EVAL}"
       script:
-        - cmake -DENABLE_COVERAGE:BOOL=TRUE -DENABLE_ASAN:BOOL=TRUE -DENABLE_WERROR:BOOL=FALSE .
+        - cmake -DENABLE_COVERAGE:BOOL=TRUE -DENABLE_WERROR:BOOL=FALSE .
         - cmake --build . -- -j2
         - cd test
         - ctest -V
+        - bash <(curl -s https://codecov.io/bash) -x /usr/bin/gcov-8
 
     - os: linux
       addons:
@@ -50,10 +43,11 @@ matrix:
             - clang-6.0
       env:
         - MATRIX_EVAL="CC=clang-6.0 && CXX=clang++-6.0"
-      before_install:
-        - eval "${MATRIX_EVAL}"
-      script:
-        - cmake -DENABLE_COVERAGE:BOOL=TRUE -DENABLE_ASAN:BOOL=TRUE -DENABLE_WERROR:BOOL=FALSE.
-        - cmake --build . -- -j2
-        - cd test
-        - ctest -V
+
+before_install:
+  - eval "${MATRIX_EVAL}"
+script:
+  - cmake -DENABLE_WERROR:BOOL=FALSE .
+  - cmake --build . -- -j2
+  - cd test
+  - ctest -V
