@@ -2,16 +2,38 @@ dist: trusty
 sudo: false
 language: cpp
 
-addons:
-  apt:
-    sources:
-      - ubuntu-toolchain-r-test
-    packages:
-      - g++-8
+matrix:
+  include:
+    - os: linux
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - g++-8
+      env:
+        - MATRIX_EVAL="CC=gcc-8 && CXX=g++-8"
+      script:
+        - CXX=g++-8 CC=gcc-8 cmake -DENABLE_COVERAGE:BOOL=TRUE -DENABLE_ASAN:BOOL=TRUE .
+        - cmake --build . -- -j2
+        - cd test
+        - ctest -j2
+        - bash <(curl -s https://codecov.io/bash) -x /usr/bin/gcov-8
 
-script:
-  - CXX=/usr/bin/g++-8 CC=/usr/bin/gcc-8 cmake -D ENABLE_COVERAGE:BOOL=TRUE .
-  - cmake --build . -- -j2
-  - cd test
-  - ctest -j2
-  - bash <(curl -s https://codecov.io/bash) -x /usr/bin/gcov-8
+    - os: linux
+      addons:
+        apt:
+          sources:
+            - llvm-toolchain-trusty-6.0
+          packages:
+            - clang-6.0
+      env:
+        - MATRIX_EVAL="CC=clang-6.0 && CXX=clang++-6.0"
+      script:
+        - CXX=clang++-6.0 CC=clang-6.0 cmake -DENABLE_COVERAGE:BOOL=TRUE -DENABLE_ASAN:BOOL=TRUE .
+        - cmake --build . -- -j2
+        - cd test
+        - ctest -j2
+
+before_install:
+    - eval "${MATRIX_EVAL}"

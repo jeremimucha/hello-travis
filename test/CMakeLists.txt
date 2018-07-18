@@ -44,7 +44,7 @@ target_sources( ${PROJECT_NAME}
     PUBLIC ${TestSources}
     )
 target_link_libraries( ${PROJECT_NAME}
-    project_warnings
+    project_config
     Lib::InternalLibrary
     GTest::GTest
     GTest::Main
