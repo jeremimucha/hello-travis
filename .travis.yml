@@ -10,21 +10,9 @@ matrix:
           sources:
             - ubuntu-toolchain-r-test
           packages:
-            - g++-7
-      env:
-        - MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"
-        - MATRIX_CFG_EVAL="Cvr=FALSE && Asn=TRUE
-
-    - os: linux
-      addons:
-        apt:
-          sources:
-            - ubuntu-toolchain-r-test
-          packages:
             - g++-8
       env:
         - MATRIX_EVAL="CC=gcc-8 && CXX=g++-8"
-        - MATRIX_CFG_EVAL="Cvr=TRUE && Asn=TRUE
       after_success:
         - bash <(curl -s https://codecov.io/bash) -x /usr/bin/gcov-8
 
@@ -39,7 +27,6 @@ matrix:
             - clang-6.0
       env:
         - MATRIX_EVAL="CC=clang-6.0 && CXX=clang++-6.0"
-        - MATRIX_CFG_EVAL="Cvr=FALSE && Asn=TRUE
 
 # These steps will be executed for every 'include' in the matrix,
 # They can be ovrriden by specifying the steps explicitly in a matrix include entry
@@ -47,9 +34,8 @@ matrix:
 #   -> g++-8 include has an additional after_success step
 before_install:
   - eval "${MATRIX_EVAL}"
-  - eval "${MATRIX_CFG_EVAL}"
 script:
-  - cmake -DENABLE_COVERAGE:BOOL=$Cvr -DENABLE_ASAN:BOOL=$Asn -DENABLE_WERROR:BOOL=FALSE .
+  - cmake -DENABLE_COVERAGE:BOOL=TRUE -DENABLE_ASAN:BOOL=TRUE -DENABLE_WERROR:BOOL=FALSE .
   - cmake --build . -- -j2
   - cd test
   - ctest -V -j2
