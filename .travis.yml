@@ -10,17 +10,34 @@ matrix:
           sources:
             - ubuntu-toolchain-r-test
           packages:
+            - g++-7
+      env:
+        - MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"
+      before_install:
+        - eval "${MATRIX_EVAL}"
+      script:
+        - cmake -DENABLE_COVERAGE:BOOL=TRUE -DENABLE_ASAN:BOOL=TRUE -DENABLE_WERROR:BOOL=FALSE .
+        - cmake --build . -- -j2
+        - cd test
+        - ctest -V -j2
+        - bash <(curl -s https://codecov.io/bash) -x /usr/bin/gcov-7
+
+    - os: linux
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
             - g++-8
       env:
         - MATRIX_EVAL="CC=gcc-8 && CXX=g++-8"
-      # script:
-      #   - CXX=g++-8 CC=gcc-8 cmake -DENABLE_COVERAGE:BOOL=TRUE -DENABLE_ASAN:BOOL=TRUE .
-      #   - cmake --build . -- -j2
-      #   - cd test
-      #   - ctest -j2
-      #   - bash <(curl -s https://codecov.io/bash) -x /usr/bin/gcov-8
-      after_script:
-      - bash <(curl -s https://codecov.io/bash) -x /usr/bin/gcov-8
+      before_install:
+        - eval "${MATRIX_EVAL}"
+      script:
+        - cmake -DENABLE_COVERAGE:BOOL=TRUE -DENABLE_ASAN:BOOL=TRUE -DENABLE_WERROR:BOOL=FALSE .
+        - cmake --build . -- -j2
+        - cd test
+        - ctest -V
 
     - os: linux
       addons:
@@ -33,17 +50,10 @@ matrix:
             - clang-6.0
       env:
         - MATRIX_EVAL="CC=clang-6.0 && CXX=clang++-6.0"
-      # script:
-      #   - CXX=clang++-6.0 CC=clang-6.0 cmake -DENABLE_COVERAGE:BOOL=TRUE -DENABLE_ASAN:BOOL=TRUE .
-      #   - cmake --build . -- -j2
-      #   - cd test
-      #   - ctest -V
-
-before_install:
-    - eval "${MATRIX_EVAL}"
-
-script:
-  - cmake -DENABLE_COVERAGE:BOOL=TRUE -DENABLE_ASAN:BOOL=TRUE .
-  - cmake --build . -- -j2
-  - cd test
-  - ctest -V
+      before_install:
+        - eval "${MATRIX_EVAL}"
+      script:
+        - cmake -DENABLE_COVERAGE:BOOL=TRUE -DENABLE_ASAN:BOOL=TRUE -DENABLE_WERROR:BOOL=FALSE.
+        - cmake --build . -- -j2
+        - cd test
+        - ctest -V

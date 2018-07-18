@@ -69,6 +69,7 @@ set( CMAKE_EXPORT_COMPILE_COMMANDS ON )
 option(ENABLE_ASAN "Enable memory sanitizers" FALSE)
 option(ENABLE_USAN "Enable undefined sanitizers" FALSE)
 option(ENABLE_TSAN "Enable thread sanitizers" FALSE)
+option(ENABLE_WERROR "Treat warnings as errors" TRUE)
 
 if(CMAKE_COMPILER_IS_GNUCC)
   option(ENABLE_COVERAGE "Enable coverage reporting for gcc/clang" FALSE)
@@ -80,7 +81,6 @@ if( CMAKE_CXX_COMPILER_ID MATCHES "MSVC" )
 else()
     target_compile_options( project_config INTERFACE
       -Wall
-      -Werror
       -Wextra # reasonable and standard
       -Weffc++ # Warn about violations of Effective C++ style rules
       -Wshadow # warn the user if a variable declaration shadows one from a parent context
@@ -93,16 +93,25 @@ else()
       -Wpedantic # warn if non-standard C++ is used
       -Wconversion # warn on type conversions that may lose data
       -Wsign-conversion # warn on sign conversions
-      -Wmisleading-indentation # warn if identation implies blocks where blocks do not exist
-      -Wduplicated-cond # warn if if / else chain has duplicated conditions
-      -Wduplicated-branches # warn if if / else branches have duplicated code
-      -Wlogical-op # warn about logical operations being used where bitwise were probably wanted
       -Wnull-dereference # warn if a null dereference is detected
-      -Wuseless-cast # warn if you perform a cast to the same type
       -Wdouble-promotion # warn if float is implicit promoted to double
       -Wformat=2 # warn on security issues around functions that format output
               # (ie printf) 
     )
+    if(ENABLE_WERROR)
+      target_compile_options( project_config INTERFACE
+        -Werror
+      )
+    endif()
+    if(CMAKE_CXX_COMPILER_ID MATCHES "GNU" )
+      target_compile_options( project_config INTERFACE
+        -Wmisleading-indentation # warn if identation implies blocks where blocks do not exist
+        -Wduplicated-cond # warn if if / else chain has duplicated conditions
+        -Wduplicated-branches # warn if if / else branches have duplicated code
+        -Wlogical-op # warn about logical operations being used where bitwise were probably wanted
+        -Wuseless-cast # warn if you perform a cast to the same type
+      )
+    endif()
     if(ENABLE_COVERAGE OR ENABLE_ASAN OR ENABLE_USAN OR ENABLE_TSAN)
       target_compile_options( project_config INTERFACE
           -g
