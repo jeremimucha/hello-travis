@@ -51,7 +51,7 @@ matrix:
 before_install:
   - eval "${MATRIX_EVAL}"
 script:
-  - cmake -DENABLE_COVERAGE:BOOL=$Cvr -DENABLE_ASAN:BOOL=$Asn -DENABLE_WERROR:BOOL=FALSE .
+  - cmake -DENABLE_COVERAGE:BOOL=${Cvr} -DENABLE_ASAN:BOOL=${Asn} -DENABLE_WERROR:BOOL=FALSE .
   - cmake --build . -- -j2
   - cd test
   - ctest -V -j2
