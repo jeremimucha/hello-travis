@@ -1,5 +1,5 @@
 dist: trusty
-sudo: false
+sudo: required  # workaround to LSAN reporting a false positive
 language: cpp
 
 matrix:
